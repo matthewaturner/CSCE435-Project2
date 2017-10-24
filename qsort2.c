@@ -112,8 +112,6 @@ static inline int64_t partition
     }
 }
 
-#pragma omp parallel
-#pragma omp single no wait
 static void quicksort_recursive
 (
     double *A,
