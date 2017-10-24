@@ -134,9 +134,13 @@ static void quicksort_recursive
 
     // sort each partition
     #pragma omp task
-    quicksort_recursive (A, left, k) ;
+    {
+        quicksort_recursive (A, left, k) ;
+    }
     #pragma omp task
-    quicksort_recursive (A, k+1, right) ;
+    {
+        quicksort_recursive (A, k+1, right) ;
+    }
 }
 
 static void quicksort
@@ -145,6 +149,8 @@ static void quicksort
     int64_t n
 )
 {
+    #pragma omp parallel
+    #pragma omp single nowait
     quicksort_recursive (A, 0, n-1) ;
 }
 
@@ -181,21 +187,28 @@ int main (int argc, char **argv)
     printf ("argc %d\n", argc) ;
     // create a list to sort
     int64_t n ;
-    if (argc <= 1)
+    int64_t num_threads ;
+    if (argc <= 2)
+    {
+        num_threads = 4 ;
+    }
+    else if (argc <= 1)
     {
         n = 1024 ;
     }
     else
     {
         sscanf (argv [1], "%lld", &n) ;
+        sscanf (argv [2], "%lld", &num_threads) ;
     }
     printf ("n %lld\n", n) ;
+    printf ("num_threads %lld\n", num_threads) ;
 
     double t, t1, t2 ;
 
     // keep qsort1.c sequential; make a copy of this file,
     // call it qsort2.c, and do your modifications there.
-    omp_set_num_threads (1) ;
+    omp_set_num_threads (num_threads) ;
     t1 = omp_get_wtime ( ) ;
 
     double *A = malloc (n * sizeof (double)) ; 
