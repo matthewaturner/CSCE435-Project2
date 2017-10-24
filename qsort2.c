@@ -151,7 +151,9 @@ static void quicksort
 {
     #pragma omp parallel
     #pragma omp single nowait
-    quicksort_recursive (A, 0, n-1) ;
+    {
+        quicksort_recursive (A, 0, n-1) ;
+    }
 }
 
 void dumplist
