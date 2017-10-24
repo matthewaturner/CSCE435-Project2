@@ -1,0 +1,140 @@
+\documentclass[11pt]{article}
+% \textwidth=6in
+% \textheight=9in
+% \oddsidemargin=0.25in
+% \evensidemargin=0.25in
+% \marginparwidth=0in
+% \marginparsep=0in
+% \topmargin=0in
+% \headheight=0in
+% \headsep=0in
+% \topskip=0in
+\usepackage{hyperref}
+\usepackage{lscape}
+\usepackage{longtable}
+\usepackage{graphics}
+\usepackage[pdftex]{graphicx}
+\usepackage{color}
+\usepackage{rotating}
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+
+\newenvironment{packed_itemize}{
+\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0pt}
+  \setlength{\parsep}{0pt}
+}{\end{itemize}}
+
+\title{CSCE 435 Parallel Computing, Fall 2017 \\
+Project 2: parallel sorting in OpenMP}
+\author{Tim Davis}
+\date{Assigned Tues, Oct 17.  Due at 2pm on Thurs, Oct 26}
+\begin{document}
+
+\maketitle
+
+In this project you will write two parallel sorting methods:
+a parallel quicksort and a parallel bucket sort,
+and compare their performance with their sequential verions
+and with each other
+
+\section{Part 1: quicksort}
+I have written a sequential quicksort \verb'qsort1.c'.
+It doesn't use OpenMP, except for the timing routing \verb'omp_get_wtime'.
+Make a copy of this file as \verb'qsort2.c' and parallelize the quicksort.
+
+Don't try to parallelize the partition method.  Instead, use the \verb'task'
+pragma to parallelize the two independent recursive calls to quicksort, for
+each subproblem.  You will need to use several pragmas to do this.
+
+\begin{itemize}
+\item \verb'#pragma omp task' for each recursive call inside the recursive
+quicksort routine, \verb'quicksort_recursive'.
+\item \verb'#pragma omp parallel' and
+\verb'#pragma omp single no wait':
+the top-level of the non-recursive \verb'quicksort' function needs to use these
+pragmas to call the recursive function.  The \verb'single nowait' option
+means that each subsequent task is done by a single thread.
+\end{itemize}
+
+Also, modify the recursive quicksort routine so that it selects between
+two sequential calls (not parallel) or two parallel calls, depending
+on the size of the list.  If the list is smaller than some constant size,
+do not use parallelism.  Experiment with which constant to use.  This
+strategy is like the use of insertion sort when \verb'n' is less than 20.
+Don't modify that part of the code.  Instead, do insertion sort if \verb'n<20',
+do a sequential recursive quicksort of \verb'n < (some bigger constant)' and do
+a parallel quicksort otherwise.  Pick a good value of this ``some bigger constant''
+that gives you good performance overall.
+
+Also parallelise the creation of the input array \verb'A' and the test to
+see if the result is sorted.  In addition, in your parallel code \verb'qsort2.c',
+use the purely sequential sort from \verb'qsort1.c' to sort a copy of the array.
+Use this to compare the output of your parallel sort to make sure you got the
+right result.  The timing for these two sorts will give your parallel speedup.
+
+Analyze the performance of your parallel quicksort with different values of \verb'n'
+(say 1 million, 10 million, and 100 million) and different numbers of threads
+(say 1, 2, 4, 8, 16, and 20).
+Plot the speedup for each three problem sizes, as a function of the number of threads.
+
+\section{Part 2: bucket sort}
+The second method is a parallel bucket sort.  Write an entirely new program to do this
+(feel free to borrow from \verb'qsort1.c' of course, like the main program).
+Call it \verb'bucket.c'.
+In this method, assume the \verb'double' array \verb'A' you are sorting contains
+integers in the range \verb'0' to \verb'K-1', for some given integer \verb'K'.
+(Make \verb'K' an input to the program via \verb'argc' and \verb'argv').
+Assume \verb'K' is small (no larger than $2^{20}$), but keep \verb'A' as \verb'double'
+for a fairer comparison with the quicksort methods.
+
+The outline of the bucksort algorithm with \verb'p' threads is as follows.
+Each step is fully parallel unless described as sequential.
+
+\begin{verbatim}
+step 1: allocate a 2D Count array of size p-by-K and set it to zero
+step 2: each thread iterates through part of the array A and counts
+    how many times it sees each value; that is, it does Count[id][A[i]]++
+    where id is the thread id
+step 3: sum up the Counts for each processor
+step 4: sequentially go through the Count array and compute its prefix sum.
+    This takes only K iterations and it will be hard to get good parallel
+    performance for this step.  So just do it sequentially.
+step 5: recreate the A array from the summed up Count
+\end{verbatim}
+
+Analyze the performance of your bucket sort for the same values of \verb'n'
+and same set of threads as part 1, and also with two values of \verb'K'.
+Try \verb'K' of 1024 and $2^{20}$.
+
+\section{Files provided}
+
+\begin{itemize}
+\item \verb'Makefile':  you will need to modify this; it just does \verb'qsort1.c' for now.
+
+\item \verb'qsort1.c': the sequential quicksort.  Leave this unchanged, but use it
+to help you write your \verb'qsort2.c' and \verb'bucket.c'.
+    Note it uses \verb'omp_get_wtime' instead of the tic/toc functions from project 1.
+
+\end{itemize}
+
+\section{What to turn in}
+
+Write up a project report discussing your solutions and the performance
+obtained by each method.  Compare the sequential and parallel quicksort.
+Also compare your parallel quicksort with your parallel bucketsort.
+They won't be sorting the same kind of data, but both will be sorting
+\verb'double' arrays \verb'A' of the same size.  Which method is faster,
+and does it depend on \verb'K'?
+
+Also turn in all your codes, including the files I have provided you.
+Include all this and your project writeup (as PDF) in a single zip file.
+
+Honesty statement:  As Aggies, we follow the Aggie Honor Code.  Period.  This
+is a solo assignment.  Do not share code; I can find it no matter how you
+obscure it.  Trust me on that; I have been writing code, now used by millions,
+since before you were born.  Copying code results in a zero on the project and
+a record in the honor system; don't risk it.
+
+\end{document}
+
