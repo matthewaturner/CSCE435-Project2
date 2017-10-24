@@ -112,6 +112,8 @@ static inline int64_t partition
     }
 }
 
+#pragma omp parallel
+#pragma omp single no wait
 static void quicksort_recursive
 (
     double *A,
@@ -130,14 +132,11 @@ static void quicksort_recursive
     // partition A [left:right] into A [left:k] and A [k+1:right]
     int64_t k = partition (A, left, right) ;
 
-    #pragma omp parallel sections
-    {
-        // sort each partition
-        #pragma omp section
-        quicksort_recursive (A, left, k) ;
-        #pragma omp section
-        quicksort_recursive (A, k+1, right) ;
-    }
+    // sort each partition
+    #pragma omp task
+    quicksort_recursive (A, left, k) ;
+    #pragma omp task
+    quicksort_recursive (A, k+1, right) ;
 }
 
 static void quicksort
