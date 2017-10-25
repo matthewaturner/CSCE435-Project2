@@ -121,7 +121,7 @@ static void quicksort_recursive
 {
     // use insertion sort on small sequences
     int64_t n = right - left + 1 ;
-    if (n < 20)
+    if (n < 100)
     {
         isort (A, left, right) ;
         return ;
@@ -220,6 +220,7 @@ int main (int argc, char **argv)
     // Each iteration i uses the seed value as their thread id.
     int id = 0 ;
     uint32_t seed = id ;
+    #pragma omp parallel for private(i) shared(A, seed)
     for (int64_t i = 0 ; i < n ; i++)
     {
         A [i] = (double) rand_r (&seed) / ((double) RAND_MAX) ;
