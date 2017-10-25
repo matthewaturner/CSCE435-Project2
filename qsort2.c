@@ -188,13 +188,14 @@ int main (int argc, char **argv)
     // create a list to sort
     int64_t n ;
     int64_t num_threads ;
-    if (argc <= 2)
-    {
-        num_threads = 4 ;
-    }
-    else if (argc <= 1)
+
+    if (arcg <= 1) 
     {
         n = 1024 ;
+    }
+    else if (argc <= 2)
+    {
+        num_threads = 4 ;
     }
     else
     {
