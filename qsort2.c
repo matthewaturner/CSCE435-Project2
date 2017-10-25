@@ -218,9 +218,9 @@ int main (int argc, char **argv)
     // create the random values to sort.
     // Do this in parallel in your modified code.
     // Each iteration i uses the seed value as their thread id.
-    int id = 0 ;
+    int id = omp_get_thread_num ;
     uint32_t seed = id ;
-    #pragma omp parallel for private(i) shared(A, seed)
+    #pragma omp parallel for private(seed) shared(A)
     for (int64_t i = 0 ; i < n ; i++)
     {
         A [i] = (double) rand_r (&seed) / ((double) RAND_MAX) ;
