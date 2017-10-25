@@ -189,7 +189,7 @@ int main (int argc, char **argv)
     int64_t n ;
     int64_t num_threads ;
 
-    if (arcg <= 1) 
+    if (argc <= 1) 
     {
         n = 1024 ;
     }
