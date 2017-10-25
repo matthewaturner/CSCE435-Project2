@@ -44,16 +44,17 @@ int main (int argc, char **argv)
 
     // allocate Count array
     double **C;
-    C = malloc(omp_ * sizeof(double *));
+    C = malloc(p * sizeof(double *));
     if (C == NULL) exit (0);
 
-    for (i = 0; i < p; i++)
+    #pragma omp parallel
+    for (int i = 0; i < p; i++)
     {
         C[i] = malloc(k * sizeof(double));
         if (C[i] == NULL) exit(0);
 
-        #pragma omp parallel shared(C[i])
-        for (j = 0; j < k; j++) 
+        #pragma omp parallel
+        for (int j = 0; j < k; j++) 
         {
             C[i][j] = 0;
         }
