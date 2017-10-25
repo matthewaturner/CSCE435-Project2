@@ -7,6 +7,10 @@ qsort1: qsort1.c
 qsort2: qsort2.c
 	icc -fopenmp -O3 qsort2.c -lm -ldl -lrt -o qsort2
 
-run: qsort1 qsort2
+bucket: bucketsort.c
+	icc -fopenmp -O3 bucket.c -lm -ldl -lrt -o bucket
+
+run: qsort1 qsort2 bucket
 	./qsort1 100000000
 	./qsort2 100000000
+	./bucket 100000000
