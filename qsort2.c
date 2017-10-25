@@ -220,7 +220,7 @@ int main (int argc, char **argv)
         sscanf (argv [2], "%lld", &num_threads);
     }
     printf ("n %lld\n", n);
-    printf ("num_threads %lld\n", num_threads);
+    printf ("num_threads %lld\n (for parallel run)", num_threads);
 
     double t, t1, t2;
 
@@ -257,6 +257,10 @@ int main (int argc, char **argv)
     // Then compare the two lists to make sure they are equal.
     // Do the copy and check in parallel.
 
+    // ---------- SEQUENTIAL
+
+    omp_set_num_threads (1);
+
     t1 = omp_get_wtime ( );
 
     // sort the list
@@ -265,8 +269,11 @@ int main (int argc, char **argv)
 
     t2 = omp_get_wtime ( );
     t = t2-t1;
-    printf ("time to sort   the list, in seconds: %g\n", t);
+    printf ("time to sort   the list, in seconds (seq): %g\n", t);
 
+    // ---------- PARALLEL
+
+    omp_set_num_threads (num_threads);
     t1 = omp_get_wtime ( );
 
     // sort the list
@@ -275,7 +282,7 @@ int main (int argc, char **argv)
 
     t2 = omp_get_wtime ( );
     t = t2-t1;
-    printf ("time to sort   the list, in seconds: %g\n", t);
+    printf ("time to sort   the list, in seconds (par): %g\n", t);
 
     // printf ("sorted:\n");
     // dumplist (A, n);
