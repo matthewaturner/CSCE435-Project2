@@ -35,7 +35,7 @@ int main (int argc, char **argv)
         sscanf (argv [1], "%lld", &k);
         sscanf (argv [2], "%lld", &p);
     }
-    printf ("k %lld\n", n);
+    printf ("k %lld\n", p);
     printf ("num_threads %lld (for parallel run)\n", p);
 
     // allocate A array
