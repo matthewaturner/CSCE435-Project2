@@ -121,7 +121,7 @@ static void quicksort_recursive
 {
     // use insertion sort on small sequences
     int64_t n = right - left + 1 ;
-    if (n < 100)
+    if (n < 20)
     {
         isort (A, left, right) ;
         return ;
@@ -130,14 +130,22 @@ static void quicksort_recursive
     // partition A [left:right] into A [left:k] and A [k+1:right]
     int64_t k = partition (A, left, right) ;
 
-    // sort each partition
-    #pragma omp task
+    if (n < 4096) 
     {
         quicksort_recursive (A, left, k) ;
-    }
-    #pragma omp task
-    {
         quicksort_recursive (A, k+1, right) ;
+    }
+    else 
+    {
+        // sort each partition
+        #pragma omp task
+        {
+            quicksort_recursive (A, left, k) ;
+        }
+        #pragma omp task
+        {
+            quicksort_recursive (A, k+1, right) ;
+        }
     }
 }
 
@@ -218,7 +226,7 @@ int main (int argc, char **argv)
     // create the random values to sort.
     // Do this in parallel in your modified code.
     // Each iteration i uses the seed value as their thread id.
-    int id = omp_get_thread_num ;
+    int id = omp_get_thread_num() ;
     uint32_t seed = id ;
     #pragma omp parallel for private(seed) shared(A)
     for (int64_t i = 0 ; i < n ; i++)
