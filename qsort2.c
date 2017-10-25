@@ -220,7 +220,7 @@ int main (int argc, char **argv)
         sscanf (argv [2], "%lld", &num_threads);
     }
     printf ("n %lld\n", n);
-    printf ("num_threads %lld\n (for parallel run)", num_threads);
+    printf ("num_threads %lld (for parallel run)\n", num_threads);
 
     double t, t1, t2;
 
