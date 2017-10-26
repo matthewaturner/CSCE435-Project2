@@ -72,6 +72,9 @@ static void bucketsort
 
     double *S = malloc((k+1) * sizeof(double));
 
+    printf("dumping summed values...");
+    dump(S, k);
+
     // sum up C
     #pragma omp parallel
     for (int i=0; i<k; i++) 
