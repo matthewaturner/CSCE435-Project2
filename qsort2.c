@@ -210,7 +210,7 @@ int main (int argc, char **argv)
     {
         n = 1024;
     }
-    else if (argc <= 2)
+    if (argc <= 2)
     {
         num_threads = 4;
     }
