@@ -10,6 +10,9 @@ qsort2: qsort2.c
 bucket: bucket.c
 	icc -fopenmp -O3 bucket.c -lm -ldl -lrt -o bucket
 
+clean: 
+	rm log.*
+
 run: qsort1 qsort2 bucket
 	./qsort1 100000000
 	./qsort2 100000000

@@ -153,7 +153,7 @@ int main (int argc, char **argv)
     t1 = omp_get_wtime ( );
     bool ok = true;
     #pragma omp parallel for shared(ok, A)
-    for (int64_t i = 0; i < n-1; i++)
+    for (int64_t i = 0; i < k-1; i++)
     {
         ok = ok && (A [i] <= A [i+1]);
     }
