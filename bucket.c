@@ -4,6 +4,34 @@
 #include <stdint.h>
 #include <omp.h>
 
+void dumplist
+(
+    double *A,
+    int64_t n
+)
+{
+    // this remains sequential:
+    if (n < 8)
+    {
+        for (int64_t i = 0; i < n; i++)
+        {
+            printf ("%lld: %g\n", i, A[i]);
+        }
+    }
+    else
+    {
+        for (int64_t i = 0; i < 4; i++)
+        {
+            printf ("%lld: %g\n", i, A[i]);
+        }
+        printf ("...\n");
+        for (int64_t i = n-4; i < n; i++)
+        {
+            printf ("%lld: %g\n", i, A[i]);
+        }
+    }
+}
+
 static void bucketsort
 (
     double *A,
@@ -108,6 +136,8 @@ int main (int argc, char **argv)
         A [i] = (double) rand_r (&seed) / ((double) RAND_MAX);
     }
 
+    dumplist(A, k);
+
     t1 = omp_get_wtime ( );
 
     // sort the list
@@ -117,6 +147,8 @@ int main (int argc, char **argv)
     t2 = omp_get_wtime ( );
     t = t2-t1;
     printf ("time to sort   the list, in seconds (par): %g\n", t);
+
+    dumplist(A, k);
 
     t1 = omp_get_wtime ( );
     bool ok = true;
