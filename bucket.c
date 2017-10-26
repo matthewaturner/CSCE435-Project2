@@ -38,7 +38,7 @@ static void bucketsort
         int thread_num = omp_get_thread_num();
         for(int j=0; j<bucket_size && i+j<k; j++) 
         {
-            C[thread_num][*A[i+j]] += 1;
+            C[thread_num][(int64_t)A[i+j]] += 1;
         }
     }
 
@@ -98,7 +98,26 @@ int main (int argc, char **argv)
     double *A = malloc (k * sizeof (double)); 
     if (A == NULL) exit (0);
 
+    int id = omp_get_thread_num();
+    uint32_t seed = id;
+    #pragma omp parallel for private(id, seed) shared(A, B)
+    for (int64_t i = 0; i < n; i++)
+    {
+        A [i] = (double) rand_r (&seed) / ((double) RAND_MAX);
+        B [i] = A[i];
+    }
+
+    omp_set_num_threads (1);
+
+    t1 = omp_get_wtime ( );
+
+    // sort the list
+    // Do this in parallel in your modified code.
     bucketsort(A, k, p);
+
+    t2 = omp_get_wtime ( );
+    t = t2-t1;
+    printf ("time to sort   the list, in seconds (par): %g\n", t);
 
 
 }

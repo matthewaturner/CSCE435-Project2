@@ -1,4 +1,4 @@
-all: qsort1 qsort2
+all: qsort1 qsort2 bucket
 
 qsort1: qsort1.c
 	icc -fopenmp -O3 qsort1.c -lm -ldl -lrt -o qsort1
