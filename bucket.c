@@ -92,6 +92,8 @@ int main (int argc, char **argv)
     printf ("k %lld\n", k);
     printf ("num_threads %lld (for parallel run)\n", p);
 
+    double t, t1, t2;
+
     omp_set_num_threads(p);
 
     // allocate A array
@@ -100,14 +102,11 @@ int main (int argc, char **argv)
 
     int id = omp_get_thread_num();
     uint32_t seed = id;
-    #pragma omp parallel for private(id, seed) shared(A, B)
-    for (int64_t i = 0; i < n; i++)
+    #pragma omp parallel for private(id, seed) shared(A)
+    for (int64_t i = 0; i < k; i++)
     {
         A [i] = (double) rand_r (&seed) / ((double) RAND_MAX);
-        B [i] = A[i];
     }
-
-    omp_set_num_threads (1);
 
     t1 = omp_get_wtime ( );
 
