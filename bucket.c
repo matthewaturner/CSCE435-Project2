@@ -118,5 +118,15 @@ int main (int argc, char **argv)
     t = t2-t1;
     printf ("time to sort   the list, in seconds (par): %g\n", t);
 
-
+    t1 = omp_get_wtime ( );
+    bool ok = true;
+    #pragma omp parallel for shared(ok, A)
+    for (int64_t i = 0; i < n-1; i++)
+    {
+        ok = ok && (A [i] <= A [i+1]);
+    }
+    t2 = omp_get_wtime ( );
+    t = t2 - t1;
+    printf ("time to check  the list, in seconds: %g\n", t);
+    printf ("ok: %d\n", ok);
 }
