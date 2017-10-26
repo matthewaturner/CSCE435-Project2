@@ -33,12 +33,12 @@ static void bucketsort
     int64_t bucket_size = k/p;
 
     #pragma omp parallel
-    for (int i=0; i<k, i+=k/p) 
+    for (int i=0; i<k; i+=k/p) 
     {
         int thread_num = omp_get_thread_num();
         for(int j=0; j<bucket_size && i+j<k; j++) 
         {
-            C[thread_num][A[i+j]] += 1;
+            C[thread_num][*A[i+j]] += 1;
         }
     }
 
@@ -84,7 +84,7 @@ int main (int argc, char **argv)
     {
         p = 4;
     }
-    else
+    if (argc > 2)
     {
         sscanf (argv [1], "%lld", &k);
         sscanf (argv [2], "%lld", &p);
@@ -95,8 +95,10 @@ int main (int argc, char **argv)
     omp_set_num_threads(p);
 
     // allocate A array
-    double *A = malloc (n * sizeof (double)); 
+    double *A = malloc (k * sizeof (double)); 
     if (A == NULL) exit (0);
+
+    bucketsort(A, k, p);
 
 
 }
